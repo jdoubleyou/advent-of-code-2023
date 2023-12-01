@@ -6,9 +6,10 @@ pub const Error = error{
     UnableToFormat,
 };
 
-const PuzFn = *const fn (std.mem.Allocator, std.fs.File) anyerror![]const u8;
+const PuzFn = *const fn (std.mem.Allocator, std.fs.File, bool) anyerror![]const u8;
 
-fn noOp(allocator: std.mem.Allocator, in: std.fs.File) anyerror![]const u8 {
+fn noOp(allocator: std.mem.Allocator, in: std.fs.File, part_two: bool) anyerror![]const u8 {
+    _ = part_two;
     _ = in;
     _ = allocator;
     return "";
@@ -57,28 +58,29 @@ pub fn main() !void {
 
     const args: [][]u8 = try std.process.argsAlloc(arena.allocator());
     var puzzle: ?usize = null;
-    switch (args.len) {
-        1 => {},
-        2 => {
-            const p: usize = try std.fmt.parseInt(usize, args[1], 10);
+    var part_two = false;
+    for (args[1..]) |arg| {
+        if (std.mem.eql(u8, arg, "--part2")) {
+            part_two = true;
+        } else {
+            const p: usize = std.fmt.parseInt(usize, args[1], 10) catch return error.UnknownArgumentGiven;
             if (p < 1 or p > 25) {
                 return error.InvalidPuzzleNumber;
             }
             puzzle = p - 1;
-        },
-        else => return error.UnknownArgumentGiven,
+        }
     }
 
     if (puzzle) |p| {
-        try run_puzzle(arena.allocator(), puzzles[p], p + 1);
+        try run_puzzle(arena.allocator(), puzzles[p], p + 1, part_two);
     } else {
         for (puzzles, 0..) |p, i| {
-            try run_puzzle(arena.allocator(), p, i + 1);
+            try run_puzzle(arena.allocator(), p, i + 1, part_two);
         }
     }
 }
 
-fn run_puzzle(allocator: std.mem.Allocator, puzzle_fn: PuzFn, day: usize) !void {
+fn run_puzzle(allocator: std.mem.Allocator, puzzle_fn: PuzFn, day: usize, part_two: bool) !void {
     const num = try std.fmt.allocPrint(allocator, "{d:0>2}", .{day});
     defer allocator.free(num);
 
@@ -108,7 +110,7 @@ fn run_puzzle(allocator: std.mem.Allocator, puzzle_fn: PuzFn, day: usize) !void 
                     const out_file = try dir.dir.createFile(out_file_name, .{});
                     defer out_file.close();
 
-                    try out_file.writeAll(try puzzle_fn(allocator, in_file));
+                    try out_file.writeAll(try puzzle_fn(allocator, in_file, part_two));
                     found_files += 1;
                 }
             },

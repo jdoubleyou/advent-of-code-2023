@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn readAll(allocator: std.mem.Allocator, file: std.fs.File) std.fs.File.ReadError![]u8 {
+pub fn readAll(allocator: std.mem.Allocator, file: std.fs.File) anyerror![]u8 {
     const file_size = try file.getEndPos();
     return try file.readToEndAlloc(allocator, file_size);
 }
