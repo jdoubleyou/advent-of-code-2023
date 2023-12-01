@@ -1,2 +1,5 @@
 **/zig-out/*
 **/zig-cache/*
+**/data/*
+!**/data/*.ex*.in
+!**/data/*.ex*.ou
