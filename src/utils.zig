@@ -18,3 +18,7 @@ fn readAll(allocator: std.mem.Allocator, file: std.fs.File) anyerror![]u8 {
     const file_size = try file.getEndPos();
     return try file.readToEndAlloc(allocator, file_size);
 }
+
+pub fn toI64(contents: []const u8) !i64 {
+    return try std.fmt.parseInt(i64, contents, 10);
+}
