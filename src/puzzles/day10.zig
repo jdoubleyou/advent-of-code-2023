@@ -1,11 +1,62 @@
 const std = @import("std");
 const utils = @import("../utils.zig");
 
-pub fn puzzle(allocator: std.mem.Allocator, in: std.fs.File, part_two: bool) ![]const u8 {
-    _ = part_two;
-    _ = in;
+const INPUT_FILE = "10.txt";
+
+fn partOne(allocator: std.mem.Allocator, contents: []const u8) ![]const u8 {
+    _ = contents;
     _ = allocator;
-    return "";
+    return "CHANGE_ME";
 }
 
-test "puzzle 10" {}
+fn partTwo(allocator: std.mem.Allocator, contents: []const u8) ![]const u8 {
+    _ = contents;
+    _ = allocator;
+    return "CHANGE_ME";
+}
+
+test "day 10, part 1 [example]" {
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    const allocator = arena.allocator();
+    defer arena.deinit();
+
+    var input =
+        \\
+    ;
+
+    const actual = try partOne(allocator, input);
+    try std.testing.expectEqualStrings("CHANGE_ME", actual);
+}
+
+test "day 10, part 1" {
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    const allocator = arena.allocator();
+    defer arena.deinit();
+
+    const input: []const u8 = try utils.loadFileContents(allocator, INPUT_FILE);
+    const response = try partOne(allocator, input);
+    try utils.write("day 10, part 1", response);
+}
+
+test "day 10, part 2 [example]" {
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    const allocator = arena.allocator();
+    defer arena.deinit();
+
+    const input =
+        \\
+    ;
+
+    const actual = try partTwo(allocator, input);
+    try std.testing.expectEqualStrings("CHANGE_ME", actual);
+}
+
+test "day 10, part 2" {
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    const allocator = arena.allocator();
+    defer arena.deinit();
+
+    const input: []const u8 = try utils.loadFileContents(allocator, INPUT_FILE);
+    const response = try partTwo(allocator, input);
+    try utils.write("day 10, part 2", response);
+}

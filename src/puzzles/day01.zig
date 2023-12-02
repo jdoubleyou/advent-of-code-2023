@@ -1,6 +1,8 @@
 const std = @import("std");
 const utils = @import("../utils.zig");
 
+const INPUT_FILE = "01.txt";
+
 fn calc(first: u8, second: ?u8) u8 {
     var sum: u8 = 0;
     sum += first * 10;
@@ -41,8 +43,7 @@ fn partOne(allocator: std.mem.Allocator, contents: []const u8) ![]const u8 {
     return try std.fmt.allocPrint(allocator, "{d}", .{sum});
 }
 
-fn partTwo(allocator: std.mem.Allocator, in: std.fs.File) ![]const u8 {
-    const contents: []u8 = try utils.readAll(allocator, in);
+fn partTwo(allocator: std.mem.Allocator, contents: []const u8) ![]const u8 {
     var new: []u8 = try allocator.alloc(u8, contents.len);
     var i: u64 = 0;
     var j: u64 = 0;
@@ -165,43 +166,38 @@ fn partTwo(allocator: std.mem.Allocator, in: std.fs.File) ![]const u8 {
     return try partOne(allocator, new);
 }
 
-pub fn puzzle(allocator: std.mem.Allocator, in: std.fs.File, part_two: bool) ![]const u8 {
-    if (part_two) {
-        return try partTwo(allocator, in);
-    } else {
-        return try partOne(allocator, try utils.readAll(allocator, in));
-    }
-}
-
-test "puzzle 1.1" {
+test "day 1, part 1 [example]" {
     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    const allocator = arena.allocator();
     defer arena.deinit();
 
-    var expected =
+    var input =
         \\1abc2
         \\pqr3stu8vwx
         \\a1b2c3d4e5f
         \\treb7uchet
     ;
-    const t = try utils.TestFile.of(
-        arena.allocator(),
-        "some_file.in",
-        expected,
-    );
-    defer t.del();
 
-    const input = try t.file();
-    defer input.close();
-
-    const actual = try partOne(arena.allocator(), expected);
+    const actual = try partOne(allocator, input);
     try std.testing.expectEqualStrings("142", actual);
 }
 
-test "puzzle 1.2" {
+test "day 1, part 1" {
     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    const allocator = arena.allocator();
     defer arena.deinit();
 
-    const expected =
+    const input: []const u8 = try utils.loadFileContents(allocator, INPUT_FILE);
+    const response = try partOne(allocator, input);
+    try utils.write("day 1, part 1", response);
+}
+
+test "day 1, part 2 [example]" {
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    const allocator = arena.allocator();
+    defer arena.deinit();
+
+    const input =
         \\two1nine
         \\eightwothree
         \\abcone2threexyz
@@ -210,16 +206,17 @@ test "puzzle 1.2" {
         \\zoneight234
         \\7pqrstsixteen
     ;
-    const t = try utils.TestFile.of(
-        arena.allocator(),
-        "some_file.in",
-        expected,
-    );
-    defer t.del();
 
-    const input = try t.file();
-    defer input.close();
-
-    const actual = try partTwo(arena.allocator(), input);
+    const actual = try partTwo(allocator, input);
     try std.testing.expectEqualStrings("281", actual);
+}
+
+test "day 1, part 2" {
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    const allocator = arena.allocator();
+    defer arena.deinit();
+
+    const input: []const u8 = try utils.loadFileContents(allocator, INPUT_FILE);
+    const response = try partTwo(allocator, input);
+    try utils.write("day 1, part 2", response);
 }
